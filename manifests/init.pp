@@ -121,6 +121,7 @@ class ssh (
   $sshd_config_trustedusercakeys          = undef,
   $sshd_config_key_revocation_list        = undef,
   $sshd_config_authorized_principals_file = undef,
+  $sshd_config_stream_local_bind_unlink   = undef,
   $sshd_config_allowagentforwarding       = undef,
 ) {
 
@@ -622,6 +623,11 @@ class ssh (
     default: { $sshd_config_authorized_principals_file_real = $sshd_config_authorized_principals_file }
   }
 
+  case $sshd_config_stream_local_bind_unlink {
+    'unset', undef: { $sshd_config_stream_local_bind_unlink_real = undef }
+    default: { $sshd_config_stream_local_bind_unlink_real = $sshd_config_stream_local_bind_unlink }
+  }
+
   # validate params
   if $ssh_config_ciphers != undef {
     validate_array($ssh_config_ciphers)
@@ -989,6 +995,10 @@ class ssh (
 
   if $sshd_config_authorized_principals_file_real != undef {
     validate_string($sshd_config_authorized_principals_file_real)
+  }
+
+  if $sshd_config_stream_local_bind_unlink_real != undef {
+    validate_re($sshd_config_stream_local_bind_unlink_real, '^(yes|no)$', "ssh::sshd_config_stream_local_bind_unlink may be either 'yes', 'no' or 'unset' and is set to <${sshd_config_stream_local_bind_unlink_real}>.")
   }
 
   if $sshd_config_allowagentforwarding != undef {
